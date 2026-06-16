@@ -1,11 +1,27 @@
+# Web Framework & Server
 fastapi
 uvicorn
-sqlalchemy
-psycopg2-binary
-python-jose[cryptography]
-passlib[bcrypt]
-python-dotenv
 python-multipart
 email-validator
+
+# Database & Migrations
+sqlalchemy
+psycopg2-binary
 alembic
+
+# Security & Authentication
+python-jose[cryptography]
+passlib[bcrypt]
+bcrypt==4.0.1
+python-dotenv
+
+# Communication / Email
 resend
+
+# PDF & Document Processing Engines (Slate Features)
+pymupdf
+img2pdf
+python-docx
+python-pptx
+openpyxl
+pypdf

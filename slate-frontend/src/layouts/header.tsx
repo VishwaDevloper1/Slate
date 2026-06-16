@@ -1,148 +1,164 @@
 import { useState } from "react";
+import { useLocation, Link } from "react-router-dom";
 import ProfileDropdown from "./ProfileDropdown";
 import { useAuth } from "../context/usercontext";
+
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  // CHANGE THIS FOR TESTING
-  const {isLoggedIn} = useAuth();
+  const { isLoggedIn } = useAuth();
+  const location = useLocation();
 
   const navLinks = [
     { name: "MERGE PDF", href: "/merge" },
     { name: "SPLIT PDF", href: "/split" },
     { name: "COMPRESS PDF", href: "/compress" },
-    { name: "CONVERT PDF", href: "/image-to-pdf" },
+    { name: "CONVERT PDF", href: "/convert" },
   ];
 
   return (
-    <header className="w-full bg-white border-b border-gray-200 sticky top-0 z-50">
-      <div className="h-20 px-4 lg:px-8 flex items-center justify-between">
-        {/* LEFT */}
-        <div className="flex items-center gap-10">
-          <a href="#" className="shrink-0">
+    <header className="w-full bg-brand-600 bg-white border-b border-slate-200 sticky top-0 z-50 shadow-md font-sans">
+      {/* Height bumped to h-24 for a grander, less cramped "zoomed-in" visual scale */}
+      <div className="h-24 bg-brand-600 px-6 sm:px-8 lg:px-12 flex items-center justify-between max-w-7xl mx-auto relative">
+        
+        {/* LEFT BRANDING & NAVIGATION LINKS */}
+        <div className="flex items-center gap-12">
+          <Link to="/" className="shrink-0 transition-transform active:scale-95">
             <img
               src="/logo.png"
-              alt="PDF Tool Logo"
-              className="h-9 w-auto"
+              alt="Slate Logo"
+              className="h-11 w-auto sm:h-12" // Increased logo scaling footprint
             />
-          </a>
+          </Link>
 
-          <nav className="hidden lg:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                className="text-lg font-semibold text-gray-800 hover:text-red-500 transition-colors"
-              >
-                {link.name}
-              </a>
-            ))}
+          <nav className="hidden lg:flex items-center gap-2 self-stretch h-24">
+            {navLinks.map((link) => {
+              const isActive = location.pathname === link.href;
+              return (
+                <Link
+                  key={link.name}
+                  to={link.href}
+                  className={`text-base tracking-wider font-bold px-5 flex items-center h-full relative transition-colors group ${
+                    isActive 
+                      ? "text-red-600" 
+                      : "text-slate-600 hover:text-red-500"
+                  }`}
+                >
+                  {link.name}
+                  <span className={`absolute bottom-0 left-5 right-5 h-1 bg-red-600 rounded-t-full transition-all duration-200 ${
+                    isActive ? "scale-100 opacity-100" : "scale-75 opacity-0 group-hover:opacity-50 group-hover:scale-90"
+                  }`} />
+                </Link>
+              );
+            })}
           </nav>
         </div>
 
-        {/* RIGHT */}
-        <div className="flex items-center gap-3">
+        {/* RIGHT SECURITY & UTILITY PROFILE ACTIONS */}
+        <div className="flex items-center gap-4">
           {isLoggedIn ? (
             <>
-              <ProfileDropdown />
+              <div className="scale-110 origin-right">
+                <ProfileDropdown />
+              </div>
 
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2 rounded-md hover:bg-gray-100"
+                className="lg:hidden p-3 rounded-xl text-slate-700 hover:bg-slate-100 transition-colors"
+                aria-label="Toggle navigation menu"
               >
-                <svg
-                  className="w-7 h-7 text-gray-800"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {mobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
                 </svg>
               </button>
             </>
           ) : (
             <>
-              {/* Tablet/Desktop */}
-              <a
-                href="/login"
-                className=" text-xl hidden md:flex items-center justify-center  bg-white hover:bg-gray-50 text-gray-700 text-sm font-semibold px-5 py-3 rounded-lg"
-              >
-                Login
-              </a>
+              {/* Tablet & Desktop Action Buttons */}
+              <div className="hidden md:flex items-center gap-3">
+                <Link
+                  to="/login"
+                  className="text-slate-800 bg-white hover:bg-slate-50 font-bold text-base px-6 py-3 rounded-xl border border-slate-200 shadow-sm transition-all active:scale-[0.98]"
+                >
+                  Login
+                </Link>
 
-              <a
-                href="/signup"
-                className=" text-xl hidden md:flex items-center justify-center bg-red-500 hover:bg-red-600 text-white text-sm font-semibold px-5 py-3 rounded-lg"
-              >
-                Sign Up
-              </a>
+                <Link
+                  to="/signup"
+                  className="bg-red-600 hover:bg-red-700 text-white font-bold text-base px-6 py-3 rounded-xl shadow-lg shadow-red-600/10 transition-all active:scale-[0.98]"
+                >
+                  Sign Up
+                </Link>
+              </div>
 
-              {/* Mobile/Tablet Menu */}
+              {/* Mobile Hamburger Icon Button */}
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2 rounded-md hover:bg-gray-100"
+                className="lg:hidden p-3 rounded-xl text-slate-700 hover:bg-slate-100 transition-colors"
               >
-                <svg
-                  className="w-6 h-6 text-gray-800"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {mobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
                 </svg>
               </button>
             </>
           )}
         </div>
-      </div>
 
-      {/* MOBILE/TABLET MENU */}
-      {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-gray-200 bg-white">
-          <div className="flex flex-col py-2">
-            {navLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                className="px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-red-500"
-              >
-                {link.name}
-              </a>
-            ))}
+        {/* MOBILE COMPACT RESPONSIVE MENU OVERLAY */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden absolute top-full left-0 w-full bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xl z-50 animate-in fade-in slide-in-from-top-4 duration-200">
+            <div className="flex flex-col py-4 px-5 space-y-2 max-w-7xl mx-auto">
+              {navLinks.map((link) => {
+                const isActive = location.pathname === link.href;
+                return (
+                  <Link
+                    key={link.name}
+                    to={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-5 py-4 text-base font-bold rounded-xl transition-all tracking-wide ${
+                      isActive 
+                        ? "bg-red-50 text-red-600 shadow-sm" 
+                        : "text-slate-700 hover:bg-slate-50 hover:text-red-500"
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                );
+              })}
 
-            {/* Only show login/signup if guest */}
-            {!isLoggedIn && (
-              <div className="border-t border-gray-200 mt-2 pt-2 flex flex-col md:hidden">
-                <a
-                  href="#"
-                  className="mx-4 mt-2 text-center border border-gray-300 bg-white text-gray-700 text-sm font-semibold py-2 rounded-lg hover:bg-gray-50"
-                >
-                  Login
-                </a>
+              {/* Auth Buttons for Mobile viewport overlay layout */}
+              {!isLoggedIn && (
+                <div className="border-t border-slate-100 mt-4 pt-4 flex flex-col md:hidden gap-3 pb-2">
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-center border border-slate-200 bg-white text-slate-800 text-base font-bold py-3.5 rounded-xl hover:bg-slate-50 transition shadow-sm"
+                  >
+                    Login
+                  </Link>
 
-                <a
-                  href="#"
-                  className="mx-4 my-2 text-center bg-red-500 hover:bg-red-600 text-white text-sm font-semibold py-2 rounded-lg"
-                >
-                  Sign Up
-                </a>
-              </div>
-            )}
+                  <Link
+                    to="/signup"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-center bg-red-600 text-white text-base font-bold py-3.5 rounded-xl shadow-md shadow-red-600/5 hover:bg-red-700 transition"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </header>
   );
 }
