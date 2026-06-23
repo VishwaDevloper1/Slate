@@ -16,17 +16,18 @@ export default function Header() {
   ];
 
   return (
-    <header className="w-full bg-brand-600 bg-white border-b border-slate-200 sticky top-0 z-50 shadow-md font-sans">
+    // ✅ FIXED: Changed classes to enforce strict global execution stacking ('sticky top-0 left-0 right-0 z-[100]')
+    <header className="w-full bg-white border-b border-slate-200/80 sticky top-0 left-0 right-0 z-[100] shadow-sm font-sans backdrop-blur-md bg-white/95">
       {/* Height bumped to h-24 for a grander, less cramped "zoomed-in" visual scale */}
-      <div className="h-24 bg-brand-600 px-6 sm:px-8 lg:px-12 flex items-center justify-between max-w-7xl mx-auto relative">
+      <div className="h-24 px-6 sm:px-8 lg:px-12 flex items-center justify-between max-w-7xl mx-auto relative">
         
         {/* LEFT BRANDING & NAVIGATION LINKS */}
         <div className="flex items-center gap-12">
-          <Link to="/" className="shrink-0 transition-transform active:scale-95">
+          <Link to="/" className="shrink-0 transition-transform active:scale-95 block">
             <img
-              src="../public/Slate.png"
+              src="/Slate.png" // ✅ FIXED: Stripped path prefix to clear browser asset mapping issues
               alt="Slate Logo"
-              className="h-11 w-auto sm:h-12" // Increased logo scaling footprint
+              className="h-11 w-auto sm:h-12 object-contain"
             />
           </Link>
 
@@ -64,7 +65,7 @@ export default function Header() {
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-3 rounded-xl text-slate-700 hover:bg-slate-100 transition-colors"
+                className="lg:hidden p-3 rounded-xl text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
                 aria-label="Toggle navigation menu"
               >
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -99,7 +100,7 @@ export default function Header() {
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-3 rounded-xl text-slate-700 hover:bg-slate-100 transition-colors"
+                className="lg:hidden p-3 rounded-xl text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
               >
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   {mobileMenuOpen ? (

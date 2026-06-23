@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../../services/api";
@@ -14,6 +14,19 @@ const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Layout Viewport Fix: Standardizes boundary scaling parameters inside build environments
+  useEffect(() => {
+    let meta = document.querySelector('meta[name="viewport"]');
+    if (!meta) {
+      meta = document.createElement("meta");
+      (meta as HTMLMetaElement).name = "viewport";
+      (meta as HTMLMetaElement).content = "width=device-width, initial-scale=1.0, maximum-scale=1.0";
+      document.getElementsByTagName("head")[0].appendChild(meta);
+    } else {
+      meta.setAttribute("content", "width=device-width, initial-scale=1.0, maximum-scale=1.0");
+    }
+  }, []);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,12 +62,12 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-white font-sans">
+    <div className="min-h-screen flex bg-white font-sans select-none">
       {/* LEFT SECTION - PRODUCTIVE COMPILER SLIDESHOW BANNER */}
       <div className="hidden lg:flex w-1/2 items-center justify-center bg-slate-50 border-r border-slate-100 p-12">
         <div className="max-w-md text-center animate-in fade-in slide-in-from-left-6 duration-300">
           <img
-            src="../public/pdf-illustration.png"
+            src="/pdf-illustration.png" // 👈 Fixed public path resolution absolute link asset string
             alt="PDF Tools Illustration"
             className="w-full max-w-xs mx-auto mb-8 drop-shadow-sm"
           />
@@ -75,7 +88,7 @@ const Signup = () => {
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="inline-flex items-center gap-2.5 text-sm font-bold text-slate-500 hover:text-red-600 bg-white hover:bg-red-50 border border-slate-200 hover:border-red-200 px-4 py-2 rounded-xl transition-all shadow-sm hover:shadow active:scale-[0.98] group select-none"
+            className="inline-flex items-center gap-2.5 text-sm font-bold text-slate-500 hover:text-red-600 bg-white hover:bg-red-50 border border-slate-200 hover:border-red-200 px-4 py-2 rounded-xl transition-all shadow-sm hover:shadow active:scale-[0.98] group select-none cursor-pointer"
           >
             <span className="p-1 rounded-full bg-slate-50 group-hover:bg-red-100 text-slate-400 group-hover:text-red-600 transition-colors flex items-center justify-center">
               <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-0.5" />
@@ -87,11 +100,11 @@ const Signup = () => {
         <div className="w-full max-w-md mx-auto animate-in fade-in zoom-in-95 duration-200 mt-12 lg:mt-0">
           {/* Logo */}
           <div className="flex justify-center mb-6">
-            <Link to="/">
+            <Link to="/" className="transition-transform active:scale-95 block">
               <img
-                src="../public/slate.png"
+                src="/Slate.png" // 👈 Fixed public path resolution absolute link asset string
                 alt="Slate Logo"
-                className="h-14 w-auto"
+                className="h-14 w-auto object-contain"
               />
             </Link>
           </div>
@@ -118,6 +131,7 @@ const Signup = () => {
                 disabled={loading}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                autoComplete="name" // 👈 Added standard autocomplete mapping
                 placeholder="Enter your full name"
                 className="w-full text-base rounded-xl border border-slate-200 px-4 py-4 outline-none transition-all placeholder:text-slate-300 bg-white disabled:bg-slate-50 focus:border-red-500 focus:ring-4 focus:ring-red-100"
               />
@@ -132,9 +146,10 @@ const Signup = () => {
                 type="email"
                 required
                 disabled={loading}
-                placeholder="name@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email" // 👈 Added explicit validation email marker
+                placeholder="name@example.com"
                 className="w-full text-base rounded-xl border border-slate-200 px-4 py-4 outline-none transition-all placeholder:text-slate-300 bg-white disabled:bg-slate-50 focus:border-red-500 focus:ring-4 focus:ring-red-100"
               />
             </div>
@@ -151,13 +166,14 @@ const Signup = () => {
                   disabled={loading}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="new-password" // 👈 Added security compilation tags
                   placeholder="Create a password"
                   className="w-full text-base rounded-xl border border-slate-200 px-4 py-4 pr-12 outline-none transition-all placeholder:text-slate-300 bg-white disabled:bg-slate-50 focus:border-red-500 focus:ring-4 focus:ring-red-100"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg cursor-pointer"
                 >
                   {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
                 </button>
@@ -176,13 +192,14 @@ const Signup = () => {
                   disabled={loading}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
+                  autoComplete="new-password" // 👈 Balanced secondary autocomplete binding
                   placeholder="Confirm your password"
                   className="w-full text-base rounded-xl border border-slate-200 px-4 py-4 pr-12 outline-none transition-all placeholder:text-slate-300 bg-white disabled:bg-slate-50 focus:border-red-500 focus:ring-4 focus:ring-red-100"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg cursor-pointer"
                 >
                   {showConfirmPassword ? <EyeOff size={22} /> : <Eye size={22} />}
                 </button>
@@ -195,9 +212,9 @@ const Signup = () => {
                 type="checkbox"
                 id="terms"
                 required
-                className="mt-1 h-4 w-4 rounded border-slate-300 text-red-600 focus:ring-red-500 accent-red-600"
+                className="mt-1 h-4 w-4 rounded border-slate-300 text-red-600 focus:ring-red-500 accent-red-600 cursor-pointer"
               />
-              <label htmlFor="terms" className="text-sm text-slate-500 font-medium select-none leading-normal">
+              <label htmlFor="terms" className="text-sm text-slate-500 font-medium select-none leading-normal cursor-pointer">
                 I agree to the{" "}
                 <Link to="/terms" className="text-red-600 hover:text-red-700 underline font-semibold ml-0.5">Terms</Link>
                 {" "}and{" "}
@@ -215,7 +232,7 @@ const Signup = () => {
             <button 
               type="submit"
               disabled={loading}
-              className={`w-full rounded-xl py-4 font-bold text-base text-white transition-all shadow-lg ${
+              className={`w-full rounded-xl py-4 font-bold text-base text-white transition-all shadow-lg cursor-pointer ${
                 loading 
                   ? "bg-slate-300 text-slate-500 cursor-not-allowed shadow-none" 
                   : "bg-red-600 hover:bg-red-700 shadow-red-600/10 active:scale-[0.99]"

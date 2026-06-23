@@ -8,6 +8,7 @@ import MergeSuccess from './pages/merge_success';
 import Split from './pages/split';
 import Compress from './pages/Compress';
 import Convert from './pages/Convert';
+import Home from './pages/home';
 // Temporary quick pages taaki links par click karne par screen blank na ho
 function App() {
   return (
@@ -20,7 +21,7 @@ function App() {
         {/* Dynamic Inner Page Workspace Switcher Frame Section */}
         <main className="flex-1 overflow-auto relative">
           <Routes>
-            <Route path="/" element={<Merger/>} />
+            <Route path="/" element={<Home/>} />
             <Route path="/merge" element={<Merger />} />
             <Route path="/split" element={<Split />} />
             <Route path="/compress" element={<Compress />} />

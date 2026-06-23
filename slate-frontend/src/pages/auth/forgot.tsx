@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Mail, ArrowLeft } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
-import api from "../../services/api";
+import api from "../../services/api"; // 👈 Centralized Axios instance gateway
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -10,6 +10,19 @@ const ForgotPassword = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [resetLink, setResetLink] = useState("");
+
+  // Layout Viewport Fix: Stabilizes rendering framework proportions on Vercel production environments
+  useEffect(() => {
+    let meta = document.querySelector('meta[name="viewport"]');
+    if (!meta) {
+      meta = document.createElement("meta");
+      (meta as HTMLMetaElement).name = "viewport";
+      (meta as HTMLMetaElement).content = "width=device-width, initial-scale=1.0, maximum-scale=1.0";
+      document.getElementsByTagName("head")[0].appendChild(meta);
+    } else {
+      meta.setAttribute("content", "width=device-width, initial-scale=1.0, maximum-scale=1.0");
+    }
+  }, []);
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,12 +44,14 @@ const ForgotPassword = () => {
 
       setLoading(true);
 
+      // 👈 Dispatched directly through central API without local mapping overrides
       const response = await api.post("/forgot-password", {
         email,
       });
 
       setSuccess("Reset link generated successfully.");
 
+      // Capture sandbox direct url strings if backend trapping flags are returned
       if (response.data.reset_link) {
         setResetLink(response.data.reset_link);
       }
@@ -74,7 +89,7 @@ const ForgotPassword = () => {
           <div className="flex justify-center mb-6">
             <Link to="/">
               <img
-                src="../public/slate.png"
+                src="/Slate.png" // 👈 Fixed public path resolution absolute link prefix
                 alt="Slate Logo"
                 className="h-16 w-auto"
               />
@@ -166,7 +181,7 @@ const ForgotPassword = () => {
       <div className="hidden lg:flex w-1/2 items-center justify-center bg-slate-50 border-l border-slate-100 p-12">
         <div className="max-w-md text-center animate-in fade-in slide-in-from-right-6 duration-300">
           <img
-            src="../public/pdf-illustration.png"
+            src="/pdf-illustration.png" // 👈 Fixed public path resolution absolute link prefix
             alt="Forgot Password Illustration"
             className="w-full max-w-xs mx-auto mb-8 drop-shadow-sm"
           />

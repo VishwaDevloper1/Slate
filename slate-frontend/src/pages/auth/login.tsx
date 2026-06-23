@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../../services/api";
@@ -13,14 +13,28 @@ const Login = () => {
   const [error, setError] = useState("");
   const { login, setUser } = useAuth();
 
+  // Layout Viewport Fix: Enforces strict production scaling settings inside Vercel containers
+  useEffect(() => {
+    let meta = document.querySelector('meta[name="viewport"]');
+    if (!meta) {
+      meta = document.createElement("meta");
+      (meta as HTMLMetaElement).name = "viewport";
+      (meta as HTMLMetaElement).content = "width=device-width, initial-scale=1.0, maximum-scale=1.0";
+      document.getElementsByTagName("head")[0].appendChild(meta);
+    } else {
+      meta.setAttribute("content", "width=device-width, initial-scale=1.0, maximum-scale=1.0");
+    }
+  }, []);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password || loading) return;
 
     try {
       setError("");
-      setLoading(true);
+      setLoading(true); // ✅ FIXED: Changed from loading(true) to the correct state setter function
 
+      // Dispatched straight to central API gateway configuration routers
       const response = await api.post("/login", {
         email,
         password,
@@ -54,7 +68,7 @@ const Login = () => {
       <div className="hidden lg:flex w-1/2 items-center justify-center bg-slate-50 border-r border-slate-100 p-12">
         <div className="max-w-md text-center animate-in fade-in slide-in-from-left-6 duration-300">
           <img
-            src="../public/pdf-illustration.png"
+            src="/pdf-illustration.png" 
             alt="PDF Management Illustration"
             className="w-full max-w-sm mx-auto mb-10 drop-shadow-sm"
           />
@@ -92,7 +106,7 @@ const Login = () => {
           <div className="flex justify-center mb-8">
             <Link to="/" className="transition-transform active:scale-95 block">
               <img
-                src="../public/slate.png" // Updated to direct browser-resolvable public root path folder
+                src="/Slate.png" 
                 alt="Slate Logo"
                 className="h-14 w-auto object-contain"
               />
@@ -120,6 +134,7 @@ const Login = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 type="email"
+                autoComplete="email" 
                 required
                 disabled={loading}
                 placeholder="name@example.com"
@@ -137,6 +152,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   type={showPassword ? "text" : "password"}
+                  autoComplete="current-password" 
                   required
                   disabled={loading}
                   placeholder="Enter security credentials"

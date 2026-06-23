@@ -27,6 +27,13 @@ app.add_middleware(
 
 app.include_router(auth_router)
 
+# Inside slate-backend/app/main.py
+
 @app.get("/")
-def root():
+def root_get():
     return {"message": "Backend running"}
+
+@app.head("/")
+def root_head():
+    # HEAD requests require the same headers as GET but must return an empty body
+    return None

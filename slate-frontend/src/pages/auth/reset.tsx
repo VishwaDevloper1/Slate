@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
-import api from "../../services/api";
+import api from "../../services/api"; // 👈 Integrated centralized Axios gateway
 
 const ResetPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -13,6 +13,19 @@ const ResetPassword = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  // Layout Viewport Fix: Freezes interface scaling profiles on Vercel production environments
+  useEffect(() => {
+    let meta = document.querySelector('meta[name="viewport"]');
+    if (!meta) {
+      meta = document.createElement("meta");
+      (meta as HTMLMetaElement).name = "viewport";
+      (meta as HTMLMetaElement).content = "width=device-width, initial-scale=1.0, maximum-scale=1.0";
+      document.getElementsByTagName("head")[0].appendChild(meta);
+    } else {
+      meta.setAttribute("content", "width=device-width, initial-scale=1.0, maximum-scale=1.0");
+    }
+  }, []);
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +52,7 @@ const ResetPassword = () => {
 
       setLoading(true);
 
+      // 👈 Unified production API instance targeting the live gateway route
       await api.post("/reset", {
         token,
         password,
@@ -61,15 +75,15 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-white font-sans">
+    <div className="min-h-screen flex bg-white font-sans select-none">
       {/* LEFT SECTION - CREATION WORKSPACE */}
       <div className="w-full lg:w-1/2 flex items-center justify-center px-6 sm:px-12 py-12">
-        <div className="w-full max-w-md animate-in fade-in zoom-in-95 duration-200">
+        <div className="w-full max-w-md mx-auto animate-in fade-in zoom-in-95 duration-200">
           {/* Logo */}
           <div className="flex justify-center mb-8">
             <Link to="/">
               <img
-                src="../public/slate.png"
+                src="/Slate.png" // 👈 Fixed public path resolution absolute link asset string
                 alt="Slate Logo"
                 className="h-16 w-auto"
               />
@@ -97,6 +111,7 @@ const ResetPassword = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   type={showPassword ? "text" : "password"}
+                  autoComplete="new-password" // 👈 Added explicit autocomplete context to resolve browser warnings
                   disabled={loading}
                   placeholder="Enter new password"
                   className="w-full text-base rounded-xl border border-slate-200 px-4 py-4 pr-12 outline-none transition-all placeholder:text-slate-300 bg-white disabled:bg-slate-50 focus:border-red-500 focus:ring-4 focus:ring-red-100"
@@ -104,7 +119,7 @@ const ResetPassword = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg cursor-pointer"
                 >
                   {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
                 </button>
@@ -121,6 +136,7 @@ const ResetPassword = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   type={showConfirmPassword ? "text" : "password"}
+                  autoComplete="new-password" // 👈 Added matching validation autocomplete context
                   disabled={loading}
                   placeholder="Confirm new password"
                   className="w-full text-base rounded-xl border border-slate-200 px-4 py-4 pr-12 outline-none transition-all placeholder:text-slate-300 bg-white disabled:bg-slate-50 focus:border-red-500 focus:ring-4 focus:ring-red-100"
@@ -128,7 +144,7 @@ const ResetPassword = () => {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg cursor-pointer"
                 >
                   {showConfirmPassword ? <EyeOff size={22} /> : <Eye size={22} />}
                 </button>
@@ -152,7 +168,7 @@ const ResetPassword = () => {
             <button 
               type="submit"
               disabled={loading}
-              className={`w-full rounded-xl py-4 font-bold text-base text-white transition-all shadow-lg ${
+              className={`w-full rounded-xl py-4 font-bold text-base text-white transition-all shadow-lg cursor-pointer ${
                 loading 
                   ? "bg-slate-300 text-slate-500 cursor-not-allowed shadow-none" 
                   : "bg-red-600 hover:bg-red-700 shadow-red-600/10 active:scale-[0.99]"
@@ -178,7 +194,7 @@ const ResetPassword = () => {
       <div className="hidden lg:flex w-1/2 items-center justify-center bg-slate-50 border-l border-slate-100 p-12">
         <div className="max-w-md text-center animate-in fade-in slide-in-from-right-6 duration-300">
           <img
-            src="../public/pdf-illustration.png"
+            src="/pdf-illustration.png" // 👈 Fixed public path resolution absolute link asset string
             alt="Reset Password Illustration"
             className="w-full max-w-xs mx-auto mb-8 drop-shadow-sm"
           />

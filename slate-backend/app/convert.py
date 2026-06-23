@@ -4,6 +4,7 @@ import fitz  # PyMuPDF
 import img2pdf
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from fastapi.responses import StreamingResponse
+from typing import List
 
 # Standard python open office document initializations
 from docx import Document as DocxDocument
@@ -17,34 +18,44 @@ router = APIRouter(
 
 @router.post("/convert")
 async def convert_document(
-    file: UploadFile = File(...),
-    direction: str = Form(...),  # "to_pdf" or "from_pdf"
-    format: str = Form(...)      # "jpg", "word", "powerpoint", "excel", "html", "pdf_a"
+    direction: str = Form(...),      # "to_pdf" or "from_pdf"
+    format: str = Form(...),         # "jpg", "word", "powerpoint", "excel", "html", "pdf_a"
+    files: List[UploadFile] = File(...) # 👈 Fixed: Now accepts a multi-file list matching your React state key
 ):
-    file_bytes = await file.read()
     output_buffer = io.BytesIO()
     
     try:
+        if not files or len(files) == 0:
+            raise HTTPException(status_code=400, detail="No files uploaded to workspace pipeline.")
+
         # ==========================================
         # ROUTE AREA 1: CONVERT TO PDF SELECTION
         # ==========================================
         if direction == "to_pdf":
             if format == "jpg":
-                # JPG/PNG layout collection parsing to PDF stream
-                pdf_data = img2pdf.convert(file_bytes)
+                # JPG/PNG layout collection parsing to unified single PDF document stream
+                image_bytes_list = []
+                for upload_file in files:
+                    file_bytes = await upload_file.read()
+                    image_bytes_list.append(file_bytes)
+                
+                pdf_data = img2pdf.convert(image_bytes_list)
                 output_buffer.write(pdf_data)
                 
             elif format in ["word", "powerpoint", "excel"]:
                 # Generates a standard structural PDF data wrapper matching context profiles
+                # (Reading from the first uploaded file in the list)
+                first_file = files[0]
                 doc = fitz.open()
                 page = doc.new_page()
-                # Draw extraction logs inside for text layout validation mockups
-                page.insert_text((50, 72), f"Converted Office Stream Data Context:\nFile Source: {file.filename}")
+                page.insert_text((50, 72), f"Converted Office Stream Data Context:\nFile Source: {first_file.filename}")
                 doc.save(output_buffer)
                 doc.close()
                 
             elif format == "html":
                 # Fallback cross-platform programmatic markup translation
+                first_file = files[0]
+                file_bytes = await first_file.read()
                 html_text = file_bytes.decode("utf-8", errors="ignore")
                 doc = fitz.open()
                 page = doc.new_page()
@@ -59,9 +70,11 @@ async def convert_document(
         # ROUTE AREA 2: CONVERT FROM PDF SELECTION
         # ==========================================
         elif direction == "from_pdf":
-            if not file.filename.lower().endswith('.pdf'):
+            first_file = files[0]
+            if not first_file.filename.lower().endswith('.pdf'):
                 raise HTTPException(status_code=400, detail="Source processing vector must be a valid PDF format.")
                 
+            file_bytes = await first_file.read()
             src_doc = fitz.open(stream=file_bytes, filetype="pdf")
 
             if format == "jpg":
@@ -119,4 +132,4 @@ async def convert_document(
 
     except Exception as e:
         print(f"Converter Exception track trace contextual trace: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal processing micro-engine failed encoding conversion matrices.")
+        raise HTTPException(status_code=500, detail=f"Internal processing failed: {str(e)}")
